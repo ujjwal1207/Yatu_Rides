@@ -3,8 +3,7 @@ const router = express.Router()
 const captainController = require('../controllers/captain.controller')
 const { body } = require('express-validator')
 const { authCaptain } = require('../middlewares/auth.middleware')
-const captainModel = require('../models/captain.model')
-
+const upload = require('../middlewares/upload.middleware'); // Import the upload middleware
 
 router.post(
   '/register',
@@ -25,6 +24,11 @@ router.post(
   captainController.registercaptain
 )
 
+router.post('/verify-email', [
+    body('email').isEmail().withMessage('Invalid email format'),
+    body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 characters long')
+], captainController.verifyEmail);
+
 router.post(
   '/login',
   [
@@ -36,9 +40,32 @@ router.post(
   captainController.logincaptain
 )
 
-router.get('/profile', authCaptain, captainController.getcaptainprofile);
+router.post('/send-otp', [body('email').isEmail()], captainController.sendLoginOtp);
+router.post('/login-otp', [
+    body('email').isEmail(),
+    body('otp').isLength({ min: 6, max: 6 })
+], captainController.loginWithOtp);
 
+router.post('/forgot-password', [body('email').isEmail()], captainController.forgotPassword);
+router.post('/reset-password', [
+    body('email').isEmail(),
+    body('otp').isLength({ min: 6, max: 6 }),
+    body('password').isLength({ min: 6 })
+], captainController.resetPassword);
+
+
+router.get('/profile', authCaptain, captainController.getcaptainprofile);
 router.post('/logout', authCaptain, captainController.logoutcaptain);
+router.patch('/details', authCaptain, captainController.updateCaptainDetails);
+router.patch('/vehicle', authCaptain, captainController.updateVehicleDetails);
+
+router.post('/profile-picture', authCaptain, (req, res) => {
+    upload(req, res, (err) => {
+        if (err) {
+            return res.status(400).json({ message: err });
+        }
+        captainController.updateProfilePicture(req, res);
+    });
+});
 
 module.exports = router
-

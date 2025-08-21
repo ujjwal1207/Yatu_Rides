@@ -66,11 +66,43 @@ const CaptainSchema = new mongoose.Schema({
   },
   coordinates: {
     type: [Number], // [longitude, latitude]
-    required: true
+    default: [0, 0]
   }
-}
-
+},
+verificationOtp: {
+    type: String,
+    select: false,
+  },
+  verificationOtpExpires: {
+    type: Date,
+    select: false,
+  },
+isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  profilePicture: {
+    type: String, // URL to the image
+    default: ''
+  },
+  resetPasswordToken: {
+    type: String,
+    select: false,
+  },
+  resetPasswordExpires: {
+    type: Date,
+    select: false,
+  },
+  loginOtp: {
+    type: String,
+    select: false,
+  },
+  loginOtpExpires: {
+    type: Date,
+    select: false,
+  }
 })
+
 
 CaptainSchema.index({ location: "2dsphere" });
 

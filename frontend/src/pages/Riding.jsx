@@ -19,13 +19,11 @@ const Riding = () => {
     <div className="h-screen">
       <Link
         to="/home"
-        className="fixed right-2 top-2 h-10 w-10 bg-white flex items-center justify-center rounded-full"
-      >
+        className="fixed right-2 top-2 h-10 w-10 bg-white flex items-center justify-center rounded-full">
         <i className="text-lg font-medium ri-home-5-line"></i>
       </Link>
       <div className="h-1/2">
-        <LiveTracking destination={ ride?.destination} />
-
+        <LiveTracking pickup={ride?.pickup} destination={ride?.destination} />
       </div>
       <div className="h-1/2 p-4">
         <div className="flex items-center justify-between">

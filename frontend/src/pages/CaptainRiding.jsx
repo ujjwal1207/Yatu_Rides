@@ -1,12 +1,14 @@
-import React, { useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import FinishRide from '../components/FinishRide';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import LiveTracking from '../components/LiveTracking';
+import React, { useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import FinishRide from "../components/FinishRide";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import LiveTracking from "../components/LiveTracking";
+
 
 const CaptainRiding = () => {
   const [finishRidePanel, setFinishRidePanel] = useState(false);
+  const [distance, setDistance] = useState(null);
   const finishRidePanelRef = useRef(null);
   const location = useLocation();
   const rideData = location.state?.ride;
@@ -15,11 +17,11 @@ const CaptainRiding = () => {
     function () {
       if (finishRidePanel) {
         gsap.to(finishRidePanelRef.current, {
-          transform: 'translateY(0)',
+          transform: "translateY(0)",
         });
       } else {
         gsap.to(finishRidePanelRef.current, {
-          transform: 'translateY(100%)',
+          transform: "translateY(100%)",
         });
       }
     },
@@ -30,46 +32,41 @@ const CaptainRiding = () => {
     <div className="h-screen relative flex flex-col justify-end">
       {/* Full-screen movable map */}
       <div className="absolute inset-0">
-        <LiveTracking destination={rideData?.Destination} />
-      </div>
-
-      {/* Top bar */}
-      <div className="fixed p-6 top-0 flex items-center justify-between w-screen pointer-events-none">
-        <img
-          className="w-16 pointer-events-auto"
-          src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-          alt=""
+        <LiveTracking
+          pickup={rideData?.pickup}
+          destination={rideData?.destination}
+          onDistanceChange={setDistance} // Pass the callback to update distance to destination
         />
-        <Link
-          to="/captain-home"
-          className="h-10 w-10 bg-white flex items-center justify-center rounded-full pointer-events-auto"
-        >
-          <i className="text-lg font-medium ri-logout-box-r-line"></i>
-        </Link>
       </div>
 
       {/* Bottom ride panel */}
       <div
-        className="h-1/5 p-6 flex items-center justify-between relative bg-yellow-400 pt-10 pointer-events-auto"
+        className="relative bg-yellow-400 pointer-events-auto cursor-pointer"
         onClick={() => {
           setFinishRidePanel(true);
         }}
       >
-        <h5 className="p-1 text-center w-[90%] absolute top-0">
-          <i className="text-3xl text-gray-800 ri-arrow-up-wide-line"></i>
-        </h5>
-        <h4 className="text-xl font-semibold">{'4 KM away'}</h4>
-        <button className="bg-green-600 text-white font-semibold p-3 px-10 rounded-lg">
-          Complete Ride
-        </button>
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-14 h-7 bg-yellow-400 rounded-t-xl flex justify-center items-center">
+          <i className="text-3xl text-black ri-arrow-up-s-line"></i>
+        </div>
+
+        <div className="p-6 pt-5 flex items-center justify-between">
+            <h4 className="text-xl font-semibold">
+                {distance !== null ? `${distance.toFixed(1)} Km` : "Calculating..."}
+            </h4>
+            <button className="bg-green-600 text-white font-semibold p-3 px-5 rounded-lg">
+              Complete Ride
+            </button>
+        </div>
       </div>
+
 
       {/* Finish Ride Slide-Up Panel */}
       <div
         ref={finishRidePanelRef}
-        className="fixed w-full z-[500] bottom-0 translate-y-full bg-white px-3 py-10 pt-12 pointer-events-auto"
+        className="fixed w-full z-[500] bottom-0 translate-y-full bg-white px-3 py-10 pt-6 pointer-events-auto"
       >
-        <FinishRide ride={rideData} setFinishRidePanel={setFinishRidePanel} />
+        <FinishRide distance={distance} ride={rideData} setFinishRidePanel={setFinishRidePanel} />
       </div>
     </div>
   );

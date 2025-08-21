@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function ConfirmRidePopUp(props) {
   const [otp, setotp] = useState("");
@@ -9,7 +8,6 @@ function ConfirmRidePopUp(props) {
 
   const submitHander = async (e) => {
     e.preventDefault();
-    console.log(props.ride)
     const response = await axios.get(
       `${import.meta.env.VITE_BASE}/rides/start-ride`,
       {
@@ -26,7 +24,8 @@ function ConfirmRidePopUp(props) {
     if (response.status === 200) {
       props.setConfirmRidePopupPanel(false);
       props.setRidePopupPanel(false);
-      navigate("/captain-riding", { state: { ride: props.ride } });
+      // Pass the updated ride object from the response to the next page
+      navigate("/captain-riding", { state: { ride: response.data } });
     }
   };
   return (
@@ -34,7 +33,7 @@ function ConfirmRidePopUp(props) {
       <h5
         className="p-1 text-center w-[93%] absolute top-0"
         onClick={() => {
-          props.setRidePopupPanel(false);
+          props.setConfirmRidePopupPanel(false);
         }}
       >
         <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
@@ -53,14 +52,16 @@ function ConfirmRidePopUp(props) {
             {props.ride?.user.fullname.firstname}
           </h2>
         </div>
-        <h5 className="text-lg font-semibold">2.2 KM</h5>
+        <h5 className="text-lg font-semibold">
+            {props.distance !== null ? `${props.distance.toFixed(1)} KM` : "..."}
+        </h5>
       </div>
       <div className="flex gap-2 justify-between flex-col items-center">
         <div className="w-full mt-5">
           <div className="flex items-center gap-5 p-3 border-b-2">
             <i className="ri-map-pin-user-fill"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
+              <h3 className="text-lg font-medium">Pickup Location</h3>
               <p className="text-sm -mt-1 text-gray-600">
                 {props.ride?.pickup}
               </p>
@@ -69,7 +70,7 @@ function ConfirmRidePopUp(props) {
           <div className="flex items-center gap-5 p-3 border-b-2">
             <i className="text-lg ri-map-pin-2-fill"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
+              <h3 className="text-lg font-medium">Destination</h3>
               <p className="text-sm -mt-1 text-gray-600">
                 {props.ride?.destination}
               </p>
@@ -97,9 +98,9 @@ function ConfirmRidePopUp(props) {
               Confirm
             </button>
             <button
+              type="button"
               onClick={() => {
                 props.setConfirmRidePopupPanel(false);
-                props.setRidePopupPanel(false);
               }}
               className="w-full mt-2 bg-red-600 text-lg text-white font-semibold p-3 rounded-lg"
             >

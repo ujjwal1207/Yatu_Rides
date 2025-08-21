@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
- function FinishRide(props){
+function FinishRide(props) {
+  const distance = props.distance;
   const navigate = useNavigate();
+  const [preview, setPreview] = useState(
+    "https://i.pinimg.com/236x/af/26/28/af26280b0ca305be47df0b799ed1b12b.jpg"
+  ); // Default image
+
+  useEffect(() => {
+    // Set the profile picture when the ride data is available
+    if (props.ride?.user?.profilePicture) {
+      setPreview(
+        `${import.meta.env.VITE_BASE}${props.ride.user.profilePicture}`
+      );
+    }
+  }, [props.ride]);
 
   async function endRide() {
     const response = await axios.post(
@@ -32,21 +46,26 @@ import { useNavigate } from "react-router-dom";
           props.setFinishRidePanel(false);
         }}
       >
-        <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-14 h-7 bg-white rounded-t-xl flex justify-center items-center">
+          <i className="text-3xl text-black ri-arrow-up-s-line"></i>
+        </div>
       </h5>
       <h3 className="text-2xl font-semibold mb-5">Finish this Ride</h3>
-      <div className="flex items-center justify-between p-4 border-2 border-yellow-400 rounded-lg mt-4">
+      <div className="flex items-center justify-between p-4 border-2 border-yellow-400 rounded-lg mt-0">
         <div className="flex items-center gap-3 ">
           <img
             className="h-12 rounded-full object-cover w-12"
-            src="https://i.pinimg.com/236x/af/26/28/af26280b0ca305be47df0b799ed1b12b.jpg"
+            src={preview}
             alt=""
           />
           <h2 className="text-lg font-medium">
             {props.ride?.user.fullname.firstname}
           </h2>
         </div>
-        <h5 className="text-lg font-semibold">2.2 KM</h5>
+        <h5 className="text-lg font-semibold">
+          {" "}
+          {distance !== null ? `${distance.toFixed(1)} Km` : "Calculating..."}
+        </h5>
       </div>
       <div className="flex gap-2 justify-between flex-col items-center">
         <div className="w-full mt-5">
@@ -88,6 +107,6 @@ import { useNavigate } from "react-router-dom";
       </div>
     </div>
   );
-};
+}
 
 export default FinishRide;

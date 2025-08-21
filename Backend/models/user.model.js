@@ -31,6 +31,38 @@ const userSchema = new mongoose.Schema({
   },
   socketId: {
     type: String
+  },
+  verificationOtp: {
+    type: String,
+    select: false,
+  },
+  verificationOtpExpires: {
+    type: Date,
+    select: false,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  profilePicture: {
+    type: String, // URL to the image
+    default: ''
+  },
+  resetPasswordToken: {
+    type: String,
+    select: false,
+  },
+  resetPasswordExpires: {
+    type: Date,
+    select: false,
+  },
+  loginOtp: {
+    type: String,
+    select: false,
+  },
+  loginOtpExpires: {
+    type: Date,
+    select: false,
   }
 })
 userSchema.methods.generateAuthToken = function () {

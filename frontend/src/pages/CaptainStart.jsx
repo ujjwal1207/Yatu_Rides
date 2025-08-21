@@ -1,41 +1,35 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import RidePopUp from "../components/RidePopUp";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useEffect, useContext } from "react";
 import { CaptainDataContext } from "../context/CaptainContext";
 import { SocketContext } from "../context/SocketContext";
 import axios from "axios";
 import CaptainDetails from "../components/CaptainDetails";
-import ConfirmRide from "../components/ConfirmRide";
 import ConfirmRidePopUp from "../components/ConfirmRidePopUp";
+import LiveTracking from "../components/LiveTracking"; // Import LiveTracking
 
 function CaptainStart() {
   const [ridePopuPanel, setRidePopupPanel] = useState(false);
   const [ConfirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
-
+  const [ride, setRide] = useState(null);
+  const [distanceToPickup, setDistanceToPickup] = useState(null); // State for distance
   const ridePopupPanelRef = useRef(null);
   const ConfirmRidePopupPanelRef = useRef(null);
-  const [ride, setride] = useState(null);
   const { socket } = useContext(SocketContext);
   const { captain } = useContext(CaptainDataContext);
 
   useEffect(() => {
     if (!socket || !captain?._id) return;
 
-    // Join room
-    socket.emit("join", {
-      userId: captain._id,
-      userType: "captain",
-    });
+    socket.emit("join", { userId: captain._id, userType: "captain" });
 
-    // Function to emit location updates
     const updateLocation = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
           socket.emit("update-location-captain", {
-            captainId: captain._id, // match backend expectation
+            captainId: captain._id,
             location: {
               lat: position.coords.latitude,
               lng: position.coords.longitude,
@@ -45,17 +39,19 @@ function CaptainStart() {
       }
     };
 
-    // Send immediately + every 10 seconds
     const locationInterval = setInterval(updateLocation, 10000);
     updateLocation();
 
-    // return () => clearInterval(locationInterval)
-  }, []);
+    socket.on("new-ride", (data) => {
+      setRide(data);
+      setRidePopupPanel(true);
+    });
 
-  socket.on("new-ride", (data) => {
-    setride(data);
-    setRidePopupPanel(true);
-  });
+    return () => {
+      clearInterval(locationInterval);
+      socket.off("new-ride");
+    };
+  }, [socket, captain]);
 
   async function confirmRide() {
     if (!ride || !captain?._id) {
@@ -63,64 +59,63 @@ function CaptainStart() {
       return;
     }
     await axios.post(
-     `http://localhost:3000/rides/confirm`,
-      {
-        rideId: ride._id, // no captainId here
-      },
+      `${import.meta.env.VITE_BASE}/rides/confirm`,
+      { rideId: ride._id },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
         },
       }
     );
-
     setRidePopupPanel(false);
     setConfirmRidePopupPanel(true);
   }
-  useGSAP(
-    function () {
-      if (ridePopuPanel) {
-        gsap.to(ridePopupPanelRef.current, {
-          transform: "translateY(0)",
-        });
-      } else {
-        gsap.to(ridePopupPanelRef.current, {
-          transform: "translateY(100%)",
-        });
-      }
-    },
-    [ridePopuPanel]
-  );
+  
+  useGSAP(() => {
+    gsap.to(ridePopupPanelRef.current, {
+      transform: ridePopuPanel ? "translateY(0)" : "translateY(100%)",
+    });
+  }, [ridePopuPanel]);
 
-  useGSAP(
-    function () {
-      if (ConfirmRidePopupPanel) {
-        gsap.to(ConfirmRidePopupPanelRef.current, {
-          transform: "translateY(0)",
-        });
-      } else {
-        gsap.to(ConfirmRidePopupPanelRef.current, {
-          transform: "translateY(100%)",
-        });
-      }
-    },
-    [ConfirmRidePopupPanel]
-  );
+  useGSAP(() => {
+    gsap.to(ConfirmRidePopupPanelRef.current, {
+      transform: ConfirmRidePopupPanel ? "translateY(0)" : "translateY(100%)",
+    });
+  }, [ConfirmRidePopupPanel]);
 
   return (
     <div className="h-screen">
+      {/* Hidden LiveTracking to get distance for the popup */}
+      {ride && (ridePopuPanel || ConfirmRidePopupPanel) && (
+          <div style={{ display: 'none' }}>
+              <LiveTracking 
+                pickup={ride.pickup} 
+                destination={ride.destination}
+                onDistanceToPickupChange={setDistanceToPickup}
+              />
+          </div>
+      )}
+
       <div className="fixed p-6 top-0 flex items-center justify-between w-screen">
         <img
           className="w-16"
           src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
           alt=""
         />
-        <Link
-          to="/captain-login"
-          className=" h-10 w-10 bg-white flex items-center justify-center rounded-full"
-        >
-          <i className="text-lg font-medium ri-logout-box-r-line"></i>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/captain-profile"
+            className="h-10 w-10 bg-white flex items-center justify-center rounded-full"
+          >
+            <i className="text-lg font-medium ri-user-line"></i>
+          </Link>
+          <Link
+            to="/captain-login"
+            className="h-10 w-10 bg-white flex items-center justify-center rounded-full"
+          >
+            <i className="text-lg font-medium ri-logout-box-r-line"></i>
+          </Link>
+        </div>
       </div>
       <div className="h-3/5">
         <img
@@ -141,6 +136,7 @@ function CaptainStart() {
           setRidePopupPanel={setRidePopupPanel}
           setConfirmRidePopupPanel={setConfirmRidePopupPanel}
           confirmRide={confirmRide}
+          distance={distanceToPickup} // Pass distance to RidePopUp
         />
       </div>
       <div
@@ -151,6 +147,7 @@ function CaptainStart() {
           ride={ride}
           setConfirmRidePopupPanel={setConfirmRidePopupPanel}
           setRidePopupPanel={setRidePopupPanel}
+          distance={distanceToPickup} // Pass distance to ConfirmRidePopUp
         />
       </div>
     </div>

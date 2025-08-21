@@ -5,18 +5,89 @@ import {
   Marker,
   DirectionsRenderer
 } from "@react-google-maps/api";
+import axios from "axios";
 
 const containerStyle = {
   width: "100%",
   height: "100%",
 };
 
-const LiveTracking = ({ destination }) => {
+// Helper function to calculate distance between two coordinates in kilometers
+const haversine_distance = (mk1, mk2) => {
+  if (!mk1 || !mk2) return 0;
+  var R = 6371.0710; // Radius of the Earth in kilometers
+  var rlat1 = mk1.lat * (Math.PI/180); // Convert degrees to radians
+  var rlat2 = mk2.lat * (Math.PI/180); // Convert degrees to radians
+  var difflat = rlat2-rlat1; // Radian difference (latitudes)
+  var difflon = (mk2.lng-mk1.lng) * (Math.PI/180); // Radian difference (longitudes)
+
+  var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+  return d;
+}
+
+
+const LiveTracking = ({ pickup, destination, onDistanceChange, onDistanceToPickupChange }) => {
   const [currentPosition, setCurrentPosition] = useState(null);
   const [directions, setDirections] = useState(null);
-  const [steps, setSteps] = useState([]);
+  const [pickupCoords, setPickupCoords] = useState(null);
+  const [destinationCoords, setDestinationCoords] = useState(null);
+  const [showPickupMarker, setShowPickupMarker] = useState(true);
 
-  // Watch live location & update route
+  // Function to get coordinates from address strings
+  const getCoordinates = async (address) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE}/maps/get-coordinates`,
+        {
+          params: { address },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token") || localStorage.getItem("captaintoken")}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching coordinates for:", address, error);
+      return null;
+    }
+  };
+
+  // Fetch coordinates for pickup and destination addresses once
+  useEffect(() => {
+    if (pickup) {
+      getCoordinates(pickup).then(setPickupCoords);
+    }
+    if (destination) {
+      getCoordinates(destination).then(setDestinationCoords);
+    }
+  }, [pickup, destination]);
+
+
+  // Fetch the route between pickup and destination once coordinates are available
+  useEffect(() => {
+    if (!pickupCoords || !destinationCoords) {
+      return;
+    }
+
+    const directionsService = new window.google.maps.DirectionsService();
+    directionsService.route(
+      {
+        origin: pickupCoords,
+        destination: destinationCoords,
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === "OK") {
+          setDirections(result);
+        } else {
+          console.error(`error fetching directions ${result}`);
+        }
+      }
+    );
+  }, [pickupCoords, destinationCoords]);
+
+
+  // Watch live location of the captain/user
   useEffect(() => {
     if (!navigator.geolocation) {
       alert("Geolocation not supported by your browser");
@@ -29,84 +100,59 @@ const LiveTracking = ({ destination }) => {
         const newPos = { lat: latitude, lng: longitude };
         setCurrentPosition(newPos);
 
-        // Draw/update route when we have destination
-        if (destination?.lat && destination?.lng) {
-          const directionsService = new window.google.maps.DirectionsService();
-          directionsService.route(
-            {
-              origin: newPos,
-              destination,
-              travelMode: window.google.maps.TravelMode.DRIVING,
-            },
-            (result, status) => {
-              if (status === "OK") {
-                setDirections(result);
-
-                // Extract navigation steps
-                const routeSteps =
-                  result.routes[0].legs[0]?.steps.map((step) => ({
-                    instruction: step.instructions,
-                    distance: step.distance.text,
-                    duration: step.duration.text,
-                  })) || [];
-                setSteps(routeSteps);
-              } else {
-                setDirections(null);
-                setSteps([]);
-              }
+        // Check distance to pickup and hide marker if close
+        if (pickupCoords) {
+            const distanceToPickup = haversine_distance(newPos, pickupCoords);
+            if (onDistanceToPickupChange) {
+                onDistanceToPickupChange(distanceToPickup);
             }
-          );
+            if (distanceToPickup < 0.02) { // Hide if within 20 meters
+                setShowPickupMarker(false);
+            }
         }
+        
+        // Calculate distance to destination and pass it to the parent component
+        if (destinationCoords && onDistanceChange) {
+            const distanceToDestination = haversine_distance(newPos, destinationCoords);
+            onDistanceChange(distanceToDestination);
+        }
+        
       },
       (error) => console.error("Error getting location", error),
       { enableHighAccuracy: true }
     );
 
     return () => navigator.geolocation.clearWatch(watchId);
-  }, [destination]);
+  }, [pickupCoords, destinationCoords, onDistanceChange, onDistanceToPickupChange]);
+
+  // Determine map center
+  const mapCenter = currentPosition || pickupCoords || { lat: 20.5937, lng: 78.9629 };
 
   return (
     <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
       <div className="relative w-full h-full">
         <GoogleMap
           mapContainerStyle={containerStyle}
-          center={currentPosition || destination}
+          center={mapCenter}
           zoom={15}
         >
-          {/* Current position marker */}
-          {currentPosition && <Marker position={currentPosition} />}
-
-          {/* Destination marker */}
-          {destination?.lat && destination?.lng && (
+          {directions && <DirectionsRenderer directions={directions} options={{ suppressMarkers: true, preserveViewport: true }} />}
+          {pickupCoords && showPickupMarker && (
             <Marker
-              position={destination}
-              icon={{
-                url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-              }}
+              position={pickupCoords}
+              label="P"
+              title="Pickup"
             />
           )}
-
-          {/* Route polyline */}
-          {directions && <DirectionsRenderer directions={directions} />}
+          {destinationCoords && (
+            <Marker
+              position={destinationCoords}
+              label="D"
+              title="Destination"
+            />
+          )}
+          {currentPosition && <Marker position={currentPosition} icon={{ url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" }} />}
         </GoogleMap>
-
-        {/* Navigation step panel */}
-        {steps.length > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 bg-white shadow-lg max-h-48 overflow-y-auto p-3">
-            <h3 className="font-semibold mb-2">Navigation</h3>
-            {steps.map((step, idx) => (
-              <div key={idx} className="border-b py-2">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{ __html: step.instruction }}
-                />
-                <div className="text-xs text-gray-500">
-                  {step.distance} • {step.duration}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </LoadScript>
   );

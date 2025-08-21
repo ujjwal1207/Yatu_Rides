@@ -6,9 +6,15 @@ const cors = require('cors')
 app.use(cors())
 const connectToDb = require('./db/db')
 const cookieParser = require('cookie-parser')
+const path = require('path'); // Import path module
+
 app.use(cookieParser())
 app.use(express.json()) // ✅ Required to parse JSON bodies
 app.use(express.urlencoded({ extended: true })) // optional
+
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 connectToDb()
 
@@ -17,8 +23,7 @@ const userRoutes = require('./routes/user.route')
 const captainRoutes = require('./routes/captain.route')
 const rideRoutes = require('./routes/rides.route')
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+// Use the routes
 app.use('/users', userRoutes)
 app.use('/captains', captainRoutes)
 app.use('/maps', mapsRoutes)
