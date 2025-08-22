@@ -201,29 +201,6 @@ module.exports.updateVehicleDetails = async (req, res) => {
     }
 };
 
-module.exports.updateProfilePicture = async (req, res) => {
-    try {
-        const captain = await captainModel.findById(req.captain._id);
-        if (!captain) {
-            return res.status(404).json({ message: 'Captain not found' });
-        }
-        if (!req.file) {
-            return res.status(400).json({ message: 'Please upload a file' });
-        }
-        
-        const profilePictureUrl = `/uploads/profile-pictures/${req.file.filename}`;
-        captain.profilePicture = profilePictureUrl;
-        await captain.save();
-
-        res.status(200).json({ message: 'Profile picture updated', captain });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-// ... (ensure all your other captain controller functions are still here)
-
-
 // Forgot Password
 module.exports.forgotPassword = async (req, res) => {
     const { email } = req.body;
@@ -311,7 +288,7 @@ module.exports.updateProfilePicture = async (req, res) => {
             return res.status(400).json({ message: 'Please upload a file' });
         }
         
-        const profilePictureUrl = `/uploads/profile-pictures/${req.file.filename}`;
+        const profilePictureUrl = req.file.path; // This now comes from multer-storage-cloudinary
         captain.profilePicture = profilePictureUrl;
         await captain.save();
 

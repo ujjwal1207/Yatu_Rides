@@ -267,8 +267,9 @@ module.exports.updateProfilePicture = async (req, res) => {
         if (!req.file) {
             return res.status(400).json({ message: 'Please upload a file' });
         }
-        
-        const profilePictureUrl = `/uploads/profile-pictures/${req.file.filename}`;
+
+        // The path is now a full URL from Cloudinary
+        const profilePictureUrl = req.file.path;
         user.profilePicture = profilePictureUrl;
         await user.save();
 

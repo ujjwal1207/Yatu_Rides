@@ -59,13 +59,11 @@ router.post('/logout', authCaptain, captainController.logoutcaptain);
 router.patch('/details', authCaptain, captainController.updateCaptainDetails);
 router.patch('/vehicle', authCaptain, captainController.updateVehicleDetails);
 
-router.post('/profile-picture', authCaptain, (req, res) => {
-    upload(req, res, (err) => {
-        if (err) {
-            return res.status(400).json({ message: err });
-        }
-        captainController.updateProfilePicture(req, res);
-    });
-});
+router.post(
+  '/profile-picture',
+  authCaptain,
+  upload, // Use upload as middleware directly
+  captainController.updateProfilePicture
+);
 
 module.exports = router

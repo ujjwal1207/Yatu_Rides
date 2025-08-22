@@ -1,34 +1,37 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 
-// Create uploads directory if it doesn't exist
-const uploadDir = './uploads/profile-pictures';
-if (!fs.existsSync(uploadDir)){
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Set up storage engine
-const storage = multer.diskStorage({
-  destination: uploadDir,
-  filename: function (req, file, cb) {
-    // Check if it's a captain or a user and set filename accordingly
-    const userType = req.captain ? 'captain' : 'user';
-    const userId = req.captain ? req.captain._id : req.user._id;
-    cb(null, `${userType}-${userId}-${Date.now()}${path.extname(file.originalname)}`);
-  }
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Check file type
+// Configure Multer to use Cloudinary for storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'yatu_rides/profile_pictures', // A folder name in your Cloudinary account
+    allowed_formats: ['jpeg', 'jpg', 'png', 'gif'],
+    // Transformation to apply to the uploaded image (e.g., resize)
+    transformation: [{ width: 500, height: 500, crop: 'limit' }],
+    // A function to generate a unique public ID for the file
+    public_id: (req, file) => {
+        const userType = req.captain ? 'captain' : 'user';
+        const userId = req.captain ? req.captain._id : req.user._id;
+        return `${userType}-${userId}-${Date.now()}`;
+    }
+  },
+});
+
+// Check file type (optional but good practice)
 function checkFileType(file, cb) {
-  // Allowed extensions
   const filetypes = /jpeg|jpg|png|gif/;
-  // Check ext
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  // Check mime
   const mimetype = filetypes.test(file.mimetype);
 
-  if (mimetype && extname) {
+  if (mimetype) {
     return cb(null, true);
   } else {
     cb('Error: Images Only!');
@@ -42,6 +45,6 @@ const upload = multer({
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
   }
-}).single('profilePicture'); // 'profilePicture' is the name of the form field in the frontend
+}).single('profilePicture');
 
 module.exports = upload;

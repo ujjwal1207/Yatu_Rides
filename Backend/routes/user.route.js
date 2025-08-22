@@ -3,6 +3,7 @@ const router = express.Router()
 const usercontroller = require('../controllers/user.controller')
 const { body } = require('express-validator')
 const auth = require('../middlewares/auth.middleware')
+const upload = require('../middlewares/upload.middleware'); // Import the upload middleware
 
 router.post(
   '/register',
@@ -68,14 +69,12 @@ router.post('/reset-password', [
 ], usercontroller.resetPassword);
 
 
-router.post('/profile-picture', auth.authUser, (req, res) => {
-  upload(req, res, err => {
-    if (err) {
-      return res.status(400).json({ message: err })
-    }
-    usercontroller.updateProfilePicture(req, res)
-  })
-})
+router.post(
+  '/profile-picture',
+  auth.authUser,
+  upload, // Use upload as middleware directly
+  usercontroller.updateProfilePicture
+);
 
 router.get('/profile', auth.authUser, usercontroller.getuserprofile)
 
