@@ -3,12 +3,10 @@ import { CaptainDataContext } from "../context/CaptainContext";
 
 const CaptainDetails = () => {
   const { captain } = useContext(CaptainDataContext);
-  const [preview, setPreview] = React.useState(
-    captain?.profilePicture
-      ? `${import.meta.env.VITE_BASE}${captain.profilePicture}`
-      : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s"
+const [preview, setPreview] = useState(
+    captain?.profilePicture ||
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s"
   );
-
   return (
     <div>
       <div className="flex items-center justify-between">
