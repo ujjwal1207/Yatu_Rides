@@ -6,8 +6,7 @@ let io
 function initializeSocket (server) {
   io = SocketIo(server, {
     cors: {
-      // SECURITY FIX: Restrict connections to your frontend URL in production
-      origin: process.env.FRONTEND_URL || '*',
+      origin: process.env.FRONTEND_URL, // Set this in your Render environment variables
       methods: ['GET', 'POST']
     }
   })

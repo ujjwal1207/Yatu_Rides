@@ -3,7 +3,10 @@ const app = express()
 const dotenv = require('dotenv')
 dotenv.config()
 const cors = require('cors')
-app.use(cors())
+app.use(cors({
+  origin: process.env.FRONTEND_URL, // Set this in your Render environment variables
+  credentials: true
+}));
 const connectToDb = require('./db/db')
 const cookieParser = require('cookie-parser')
 const path = require('path');

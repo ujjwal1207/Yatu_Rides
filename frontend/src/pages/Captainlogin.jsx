@@ -20,9 +20,9 @@ const Captainlogin = () => {
     };
 
     const response = await axios.post(
-      `${import.meta.env.VITE_BASE}/captains/login`,
-      captain
-    );
+  "/captains/login",
+  captain
+);
 
     if (response.status === 200) {
       const data = response.data;

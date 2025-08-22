@@ -45,7 +45,7 @@ function UserProfile() {
   const handleUserSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.patch(`${import.meta.env.VITE_BASE}/users/details`, userDetails, {
+      const response = await axios.patch("/users/details", userDetails, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setUser(response.data.user);
@@ -60,7 +60,7 @@ function UserProfile() {
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${import.meta.env.VITE_BASE}/users/change-password`, passwordDetails, {
+      await axios.post("/users/change-password", passwordDetails, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessage('Password changed successfully!');
@@ -82,7 +82,7 @@ function UserProfile() {
     formData.append('profilePicture', profilePicture);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE}/users/profile-picture`, formData, {
+      const response = await axios.post("/users/profile-picture", formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`,

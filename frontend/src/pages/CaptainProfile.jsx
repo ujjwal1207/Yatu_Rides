@@ -1,29 +1,32 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { CaptainDataContext } from '../context/CaptainContext';
+import React, { useState, useContext, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { CaptainDataContext } from "../context/CaptainContext";
 
 function CaptainProfile() {
   const { captain, setCaptain } = useContext(CaptainDataContext);
   const [captainDetails, setCaptainDetails] = useState({
-    firstname: captain?.fullname?.firstname || '',
-    lastname: captain?.fullname?.lastname || '',
-    email: captain?.email || '',
+    firstname: captain?.fullname?.firstname || "",
+    lastname: captain?.fullname?.lastname || "",
+    email: captain?.email || "",
   });
   const [vehicleDetails, setVehicleDetails] = useState({
-    color: captain?.vehicle?.color || '',
-    number: captain?.vehicle?.number || '',
-    capacity: captain?.vehicle?.capacity || '',
-    type: captain?.vehicle?.type || 'car',
+    color: captain?.vehicle?.color || "",
+    number: captain?.vehicle?.number || "",
+    capacity: captain?.vehicle?.capacity || "",
+    type: captain?.vehicle?.type || "car",
   });
   const [passwordDetails, setPasswordDetails] = useState({
-    oldPassword: '',
-    newPassword: '',
+    oldPassword: "",
+    newPassword: "",
   });
   const [profilePicture, setProfilePicture] = useState(null);
-  const [preview, setPreview] = useState(captain?.profilePicture || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [preview, setPreview] = useState(
+    captain?.profilePicture ||
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s"
+  );
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -35,8 +38,8 @@ function CaptainProfile() {
   useEffect(() => {
     if (message || error) {
       const timer = setTimeout(() => {
-        setMessage('');
-        setError('');
+        setMessage("");
+        setError("");
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -65,84 +68,86 @@ function CaptainProfile() {
   const handleCaptainSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.patch(
-        `${import.meta.env.VITE_BASE}/captains/details`,
-        captainDetails,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('captaintoken')}`,
-          },
-        }
-      );
+      const response = await axios.patch("/captains/details", captainDetails, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
+        },
+      });
       setCaptain(response.data.captain);
-      setMessage('Captain details updated successfully!');
-      setError('');
+      setMessage("Captain details updated successfully!");
+      setError("");
     } catch (error) {
-      setError('Failed to update captain details.');
-      setMessage('');
-      console.error('Error updating captain details:', error);
+      setError("Failed to update captain details.");
+      setMessage("");
+      console.error("Error updating captain details:", error);
     }
   };
 
   const handleVehicleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.patch(
-        `${import.meta.env.VITE_BASE}/captains/vehicle`,
-        vehicleDetails,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('captaintoken')}`,
-          },
-        }
-      );
+      const response = await axios.patch("/captains/vehicle", vehicleDetails, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
+        },
+      });
       setCaptain(response.data.captain);
-      setMessage('Vehicle details updated successfully!');
-      setError('');
+      setMessage("Vehicle details updated successfully!");
+      setError("");
     } catch (error) {
-      setError('Failed to update vehicle details.');
-      setMessage('');
-      console.error('Error updating vehicle details:', error);
+      setError("Failed to update vehicle details.");
+      setMessage("");
+      console.error("Error updating vehicle details:", error);
     }
   };
-  
+
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${import.meta.env.VITE_BASE}/captains/change-password`, passwordDetails, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('captaintoken')}` },
-      });
-      setMessage('Password changed successfully!');
-      setError('');
-      setPasswordDetails({ oldPassword: '', newPassword: '' });
+      await axios.post(
+        "/captains/change-password",
+        passwordDetails,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
+          },
+        }
+      );
+      setMessage("Password changed successfully!");
+      setError("");
+      setPasswordDetails({ oldPassword: "", newPassword: "" });
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to change password.');
-      setMessage('');
+      setError(err.response?.data?.message || "Failed to change password.");
+      setMessage("");
     }
   };
 
   const handlePictureSubmit = async (e) => {
     e.preventDefault();
     if (!profilePicture) {
-      setError('Please select a picture to upload.');
+      setError("Please select a picture to upload.");
       return;
     }
     const formData = new FormData();
-    formData.append('profilePicture', profilePicture);
+    formData.append("profilePicture", profilePicture);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE}/captains/profile-picture`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('captaintoken')}`,
-        },
-      });
+      const response = await axios.post(
+       "/captains/profile-picture",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
+          },
+        }
+      );
       setCaptain(response.data.captain);
-      setMessage('Profile picture updated!');
-      setError('');
+      setMessage("Profile picture updated!");
+      setError("");
     } catch (err) {
-      setError('Failed to upload picture.');
-      setMessage('');
+      setError("Failed to upload picture.");
+      setMessage("");
     }
   };
 
@@ -161,12 +166,18 @@ function CaptainProfile() {
         </div>
 
         {message && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6 text-center" role="alert">
+          <div
+            className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6 text-center"
+            role="alert"
+          >
             <span className="block sm:inline">{message}</span>
           </div>
         )}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6 text-center" role="alert">
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6 text-center"
+            role="alert"
+          >
             <span className="block sm:inline">{error}</span>
           </div>
         )}
@@ -189,18 +200,39 @@ function CaptainProfile() {
             </div>
 
             <form onSubmit={handlePictureSubmit} className="mb-6">
-                 <label className="text-sm font-medium text-gray-600">Update Profile Picture</label>
-                 <div className="mt-1 flex items-center gap-4">
-                    <input type="file" ref={fileInputRef} onChange={handlePictureChange} className="hidden" accept="image/*" />
-                    <button type="button" onClick={() => fileInputRef.current.click()} className="flex-grow bg-gray-200 text-gray-700 font-semibold rounded-lg px-4 py-2 hover:bg-gray-300 text-sm">Choose Image</button>
-                    <button type="submit" className="bg-blue-500 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-600 text-sm">Upload</button>
-                 </div>
+              <label className="text-sm font-medium text-gray-600">
+                Update Profile Picture
+              </label>
+              <div className="mt-1 flex items-center gap-4">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handlePictureChange}
+                  className="hidden"
+                  accept="image/*"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current.click()}
+                  className="flex-grow bg-gray-200 text-gray-700 font-semibold rounded-lg px-4 py-2 hover:bg-gray-300 text-sm"
+                >
+                  Choose Image
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-600 text-sm"
+                >
+                  Upload
+                </button>
+              </div>
             </form>
-            <hr className="my-6"/>
+            <hr className="my-6" />
 
             <form onSubmit={handleCaptainSubmit} className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-600">First Name</label>
+                <label className="text-sm font-medium text-gray-600">
+                  First Name
+                </label>
                 <input
                   type="text"
                   name="firstname"
@@ -210,7 +242,9 @@ function CaptainProfile() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">Last Name</label>
+                <label className="text-sm font-medium text-gray-600">
+                  Last Name
+                </label>
                 <input
                   type="text"
                   name="lastname"
@@ -220,7 +254,9 @@ function CaptainProfile() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">Email</label>
+                <label className="text-sm font-medium text-gray-600">
+                  Email
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -241,10 +277,14 @@ function CaptainProfile() {
           {/* Vehicle and Password Forms */}
           <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold mb-6 text-gray-800">Vehicle Details</h3>
+              <h3 className="text-xl font-semibold mb-6 text-gray-800">
+                Vehicle Details
+              </h3>
               <form onSubmit={handleVehicleSubmit} className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Color</label>
+                  <label className="text-sm font-medium text-gray-600">
+                    Color
+                  </label>
                   <input
                     type="text"
                     name="color"
@@ -254,7 +294,9 @@ function CaptainProfile() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Number</label>
+                  <label className="text-sm font-medium text-gray-600">
+                    Number
+                  </label>
                   <input
                     type="text"
                     name="number"
@@ -264,7 +306,9 @@ function CaptainProfile() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Capacity</label>
+                  <label className="text-sm font-medium text-gray-600">
+                    Capacity
+                  </label>
                   <input
                     type="number"
                     name="capacity"
@@ -274,7 +318,9 @@ function CaptainProfile() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Type</label>
+                  <label className="text-sm font-medium text-gray-600">
+                    Type
+                  </label>
                   <select
                     name="type"
                     value={vehicleDetails.type}
@@ -296,22 +342,48 @@ function CaptainProfile() {
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold mb-6 text-gray-800">Change Password</h3>
+              <h3 className="text-xl font-semibold mb-6 text-gray-800">
+                Change Password
+              </h3>
               <form onSubmit={handlePasswordSubmit} className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Old Password</label>
-                  <input type="password" name="oldPassword" value={passwordDetails.oldPassword} onChange={handlePasswordChange} className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-red-500" />
+                  <label className="text-sm font-medium text-gray-600">
+                    Old Password
+                  </label>
+                  <input
+                    type="password"
+                    name="oldPassword"
+                    value={passwordDetails.oldPassword}
+                    onChange={handlePasswordChange}
+                    className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">New Password</label>
-                  <input type="password" name="newPassword" value={passwordDetails.newPassword} onChange={handlePasswordChange} className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-red-500" />
+                  <label className="text-sm font-medium text-gray-600">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    value={passwordDetails.newPassword}
+                    onChange={handlePasswordChange}
+                    className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
                 </div>
-                 <div className="text-right">
-                    <Link to="/forgot-password-captain" className="text-sm text-blue-600 hover:underline">
-                        Forgot Old Password?
-                    </Link>
+                <div className="text-right">
+                  <Link
+                    to="/forgot-password-captain"
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    Forgot Old Password?
+                  </Link>
                 </div>
-                <button type="submit" className="w-full bg-red-600 text-white font-semibold rounded-lg px-4 py-3 text-base hover:bg-red-700 transition-colors">Change Password</button>
+                <button
+                  type="submit"
+                  className="w-full bg-red-600 text-white font-semibold rounded-lg px-4 py-3 text-base hover:bg-red-700 transition-colors"
+                >
+                  Change Password
+                </button>
               </form>
             </div>
           </div>

@@ -20,7 +20,7 @@ const UserLogin = () => {
       return;
     }
     try {
-      await axios.post(`${import.meta.env.VITE_BASE}/users/send-otp`, { email });
+      await axios.post("/users/send-otp", { email });
       setMessage('OTP sent to your email!');
     } catch (error) {
       setMessage('Failed to send OTP. Please check the email.');
@@ -34,7 +34,7 @@ const UserLogin = () => {
     
     if (loginMethod === 'password') {
       try {
-        const response = await axios.post(`${import.meta.env.VITE_BASE}/users/login`, { email, password });
+        const response = await axios.post("/users/login", { email, password });
         if (response.status === 200) {
           const data = response.data;
           setUser(data.user);
@@ -46,7 +46,7 @@ const UserLogin = () => {
       }
     } else { // OTP login
       try {
-        const response = await axios.post(`${import.meta.env.VITE_BASE}/users/login-otp`, { email, otp });
+        const response = await axios.post("/users/login-otp", { email, otp });
         if (response.status === 200) {
           const data = response.data;
           setUser(data.user);

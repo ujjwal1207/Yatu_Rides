@@ -24,7 +24,7 @@ function UserSignup() {
     };
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE}/users/register`, newuser);
+      const response = await axios.post("/users/register", newuser);
       setMessage(response.data.message);
       setStep('verify');
     } catch (error) {
@@ -36,7 +36,7 @@ function UserSignup() {
     e.preventDefault();
     setMessage("");
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE}/users/verify-email`, { email, otp });
+      const response = await axios.post("/users/verify-email", { email, otp });
       if (response.status === 200) {
         const data = response.data;
         setUser(data.user);

@@ -65,8 +65,7 @@ function Start() {
   const handlePickupChange = async (e) => {
     setPickup(e.target.value);
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE}/maps/get-suggestions`,
+      const response = await axios.get("/maps/get-suggestions",
         {
           params: { input: e.target.value },
           headers: {
@@ -84,7 +83,7 @@ function Start() {
     setDestination(e.target.value);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE}/maps/get-suggestions`,
+        "/maps/get-suggestions",
         {
           params: { input: e.target.value },
           headers: {
@@ -150,7 +149,7 @@ function Start() {
     setpanel(false);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE}/rides/get-fare`,
+        "/rides/get-fare",
         {
           params: {
             Pickup: Pickup,
@@ -171,8 +170,7 @@ function Start() {
 
   async function CreateRide(Vehicletype) {
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE}/rides/create`,
+      const response = await axios.post("/rides/create",
         {
           Pickup: Pickup,
           Destination: Destination,

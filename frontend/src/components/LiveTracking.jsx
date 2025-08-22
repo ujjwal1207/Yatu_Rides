@@ -37,7 +37,7 @@ const LiveTracking = ({ pickup, destination, onDistanceChange, onDistanceToPicku
   const getCoordinates = async (address) => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE}/maps/get-coordinates`,
+       "/maps/get-coordinates",
         {
           params: { address },
           headers: {
