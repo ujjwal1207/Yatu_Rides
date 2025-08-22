@@ -192,23 +192,26 @@ function Start() {
 
   return (
     <div className="relative h-screen overflow-hidden">
-      <div className="flex justify-between items-center">
-        <div className="absolute top-4 left-4 z-10 flex items-center mt-3 gap-4">
-          <img
-            className="w-16"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Uber_logo_2018.svg/2560px-Uber_logo_2018.svg.png"
-            alt="Uber Logo"
-          />
+      {/* This block will now only show when the panel is closed */}
+      {!panel && (
+        <div className="flex justify-between items-center">
+          <div className="absolute top-2 left-4 z-10 flex items-center gap-4">
+            <img
+              className="w-20"
+              src="/zipride user.png"
+              alt="Uber Logo"
+            />
+          </div>
+          <div className="absolute top-4 right-4 z-10">
+            <Link
+              to="/user-profile"
+              className="bg-white rounded-full p-2 shadow-md flex items-center justify-center h-12 w-12"
+            >
+              <i className="ri-user-line text-2xl"></i>
+            </Link>
+          </div>
         </div>
-        <div className="absolute top-4 right-4 z-10">
-          <Link
-            to="/user-profile"
-            className="bg-white rounded-full p-2 shadow-md flex items-center justify-center h-12 w-12"
-          >
-            <i className="ri-user-line text-2xl"></i>
-          </Link>
-        </div>
-      </div>
+      )}
 
       <div className="h-screen w-screen">
         <img

@@ -15,14 +15,14 @@ function UserProfile() {
     newPassword: '',
   });
   const [profilePicture, setProfilePicture] = useState(null);
-  const [preview, setPreview] = useState(user?.profilePicture ? `${import.meta.env.VITE_BASE}${user.profilePicture}` : 'https://i.pinimg.com/236x/af/26/28/af26280b0ca305be47df0b799ed1b12b.jpg');
+  const [preview, setPreview] = useState(user?.profilePicture || 'https://i.pinimg.com/236x/af/26/28/af26280b0ca305be47df0b799ed1b12b.jpg');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
   
   useEffect(() => {
     if (user?.profilePicture) {
-      setPreview(`${import.meta.env.VITE_BASE}${user.profilePicture}`);
+      setPreview(user.profilePicture);
     }
   }, [user]);
 

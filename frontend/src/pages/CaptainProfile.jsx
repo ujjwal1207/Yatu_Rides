@@ -21,14 +21,14 @@ function CaptainProfile() {
     newPassword: '',
   });
   const [profilePicture, setProfilePicture] = useState(null);
-  const [preview, setPreview] = useState(captain?.profilePicture ? `${import.meta.env.VITE_BASE}${captain.profilePicture}` : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s');
+  const [preview, setPreview] = useState(captain?.profilePicture || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (captain?.profilePicture) {
-      setPreview(`${import.meta.env.VITE_BASE}${captain.profilePicture}`);
+      setPreview(captain.profilePicture);
     }
   }, [captain]);
 

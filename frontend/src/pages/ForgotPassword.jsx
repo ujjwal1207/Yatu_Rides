@@ -49,7 +49,7 @@ function ForgotPassword() {
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
         <img
           className="w-16 mb-6 mx-auto"
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYQy-OIkA6In0fTvVwZADPmFFibjmszu2A0g&s"
+          src="/zipride captain.png"
           alt="Logo"
         />
         <h2 className="text-2xl font-bold text-center mb-2">Forgot Password</h2>

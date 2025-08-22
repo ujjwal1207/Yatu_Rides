@@ -40,7 +40,7 @@ const Captainlogin = () => {
       <div>
         <img
           className="w-20 mb-3"
-          src="https://www.svgrepo.com/show/505031/uber-driver.svg"
+          src="/zipride captain.png"
           alt=""
         />
 

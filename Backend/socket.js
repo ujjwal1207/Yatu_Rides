@@ -6,7 +6,8 @@ let io
 function initializeSocket (server) {
   io = SocketIo(server, {
     cors: {
-      origin: '*',
+      // SECURITY FIX: Restrict connections to your frontend URL in production
+      origin: process.env.FRONTEND_URL || '*',
       methods: ['GET', 'POST']
     }
   })
@@ -48,9 +49,10 @@ function initializeSocket (server) {
       io.emit('captain-location-updated', { captainId, location })
     })
 
-    socket.on('ride-confirmed', ride=>{
-      setW
-    })
+    // CRASH FIX: Removed the incomplete 'ride-confirmed' event handler
+    // socket.on('ride-confirmed', ride => {
+    //   setW
+    // })
 
     socket.on('disconnect', () => {
       console.log('User disconnected:', socket.id)
