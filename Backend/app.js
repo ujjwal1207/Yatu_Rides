@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }))
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Serve the static files from the React app
+// This line will serve the 'dist' folder once you build the frontend for production
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 connectToDb()
@@ -25,10 +25,10 @@ const userRoutes = require('./routes/user.route')
 const captainRoutes = require('./routes/captain.route')
 const rideRoutes = require('./routes/rides.route')
 
-// API routes
 app.use('/users', userRoutes)
 app.use('/captains', captainRoutes)
 app.use('/maps', mapsRoutes)
 app.use('/rides', rideRoutes)
+
 
 module.exports = app
