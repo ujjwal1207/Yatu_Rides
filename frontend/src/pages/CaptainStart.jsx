@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-import RidePopUp from "../components/RidePopUp";
+import RidePopUp from "../components/RidePopup";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { CaptainDataContext } from "../context/CaptainContext";
