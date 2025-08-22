@@ -1,6 +1,6 @@
 const captainModel = require('../models/captain.model');
 const { validationResult } = require('express-validator');
-const blackListTokenModel = require('../models/blackListToken.model');
+const {blacklisttoken}= require("../models/blacklistToken.model")
 const crypto = require('crypto');
 const { sendVerificationEmail, sendPasswordResetEmail, sendLoginOtpEmail } = require('../services/mail.service');
 const bcrypt = require('bcrypt');
@@ -303,7 +303,7 @@ module.exports.logoutcaptain = async (req, res) => {
     res.clearCookie('captaintoken');
     const token = req.cookies.captaintoken || req.headers.authorization?.split(' ')[1];
     if (token) {
-        await blackListTokenModel.create({ token });
+        await blacklisttoken.create({ token });
     }
     res.status(200).json({ message: 'Logged out successfully' });
 };

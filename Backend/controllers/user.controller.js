@@ -1,6 +1,6 @@
 const usermodel = require('../models/user.model');
 const { validationResult } = require('express-validator');
-const blackListTokenModel = require('../models/blackListToken.model');
+const blackListTokenModel = require('../models/blacklistToken.model');
 const crypto = require('crypto');
 const { sendVerificationEmail, sendPasswordResetEmail, sendLoginOtpEmail } = require('../services/mail.service');
 const bcrypt = require('bcrypt');
