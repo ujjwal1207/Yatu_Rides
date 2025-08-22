@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useContext } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import RidePopUp from "../components/RidePopup";
 import { useGSAP } from "@gsap/react";

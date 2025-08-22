@@ -1,5 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { CaptainDataContext } from "../context/CaptainContext";
+
 
 const CaptainDetails = () => {
   const { captain } = useContext(CaptainDataContext);
