@@ -14,8 +14,8 @@ const UserProtectWrapper = ({ children }) => {
       navigate("/login");
     }
 
-    axios
-      .get("/users/profile", {
+axios
+  .get(`${import.meta.env.VITE_BASE}/users/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
