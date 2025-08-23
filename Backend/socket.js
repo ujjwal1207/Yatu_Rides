@@ -6,7 +6,7 @@ let io
 function initializeSocket (server) {
   io = SocketIo(server, {
     cors: {
-      origin: process.env.FRONTEND_URL, // Set this in your Render environment variables
+      origin: process.env.FRONTEND_URL,
       methods: ['GET', 'POST']
     }
   })
