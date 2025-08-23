@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 const cors = require('cors')
 app.use(cors({
-  origin: process.env.FRONTEND_URL, // Set this in your Render environment variables
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 const connectToDb = require('./db/db')
@@ -17,9 +17,6 @@ app.use(express.urlencoded({ extended: true }))
 
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// This line will serve the 'dist' folder once you build the frontend for production
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 connectToDb()
 

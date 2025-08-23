@@ -3,7 +3,8 @@ import { io } from "socket.io-client";
 
 export const SocketContext = createContext();
 
-const socket = io(import.meta.env.VITE_BASE || "http://localhost:3000");
+// Use the new environment variable that points to your live backend
+const socket = io(import.meta.env.VITE_BASE);
 
 const SocketProvider = ({ children }) => {
   return (
