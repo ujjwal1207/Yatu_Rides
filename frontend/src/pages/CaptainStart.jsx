@@ -59,7 +59,7 @@ function CaptainStart() {
       return;
     }
     await axios.post(
-      "/rides/confirm",
+      `${import.meta.env.VITE_BASE}/rides/confirm`,
       { rideId: ride._id },
       {
         headers: {

@@ -9,7 +9,7 @@ function ConfirmRidePopUp(props) {
   const submitHander = async (e) => {
     e.preventDefault();
     const response = await axios.get(
-     "/rides/start-ride",
+     `${import.meta.env.VITE_BASE}/rides/start-ride`,
       {
         params: {
           rideId: props.ride._id,

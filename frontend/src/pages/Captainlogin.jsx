@@ -20,7 +20,7 @@ const Captainlogin = () => {
     };
 
     const response = await axios.post(
-  "/captains/login",
+  `${import.meta.env.VITE_BASE}/captains/login`,
   captain
 );
 

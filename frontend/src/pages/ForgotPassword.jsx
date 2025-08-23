@@ -23,7 +23,7 @@ function ForgotPassword() {
     setError('');
     setMessage('');
     try {
-      const response = await axios.post("/forgot-password", { email });
+      const response = await axios.post(`${import.meta.env.VITE_BASE}/forgot-password`, { email });
       setMessage(response.data.message);
       setStep('otp');
     } catch (err) {
@@ -36,7 +36,7 @@ function ForgotPassword() {
     setError('');
     setMessage('');
     try {
-      const response = await axios.post("/reset-password", { email, otp, password });
+      const response = await axios.post(`${import.meta.env.VITE_BASE}/reset-password`, { email, otp, password });
       setMessage(response.data.message + ' You will be redirected to login.');
       setTimeout(() => navigate(loginRoute), 3000);
     } catch (err) {

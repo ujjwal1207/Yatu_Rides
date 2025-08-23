@@ -68,7 +68,7 @@ function CaptainProfile() {
   const handleCaptainSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.patch("/captains/details", captainDetails, {
+      const response = await axios.patch(`${import.meta.env.VITE_BASE}/captains/details`, captainDetails, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
         },
@@ -86,7 +86,7 @@ function CaptainProfile() {
   const handleVehicleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.patch("/captains/vehicle", vehicleDetails, {
+      const response = await axios.patch(`${import.meta.env.VITE_BASE}/captains/vehicle`, vehicleDetails, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
         },
@@ -105,7 +105,7 @@ function CaptainProfile() {
     e.preventDefault();
     try {
       await axios.post(
-        "/captains/change-password",
+        `${import.meta.env.VITE_BASE}/captains/change-password`,
         passwordDetails,
         {
           headers: {
@@ -133,7 +133,7 @@ function CaptainProfile() {
 
     try {
       const response = await axios.post(
-       "/captains/profile-picture",
+       `${import.meta.env.VITE_BASE}/captains/profile-picture`,
         formData,
         {
           headers: {

@@ -22,7 +22,7 @@ function FinishRide(props) {
 
   async function endRide() {
     const response = await axios.post(
-      "/rides/end-ride",
+      `${import.meta.env.VITE_BASE}/rides/end-ride`,
       {
         rideId: props.ride._id,
       },

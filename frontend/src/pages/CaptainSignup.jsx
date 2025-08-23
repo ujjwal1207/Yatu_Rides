@@ -33,7 +33,7 @@ function CaptainSignup() {
       },
     };
     try {
-      const response = await axios.post("/captains/register", captaindata);
+      const response = await axios.post(`${import.meta.env.VITE_BASE}/captains/register`, captaindata);
       setMessage(response.data.message);
       setStep('verify');
     } catch (error) {
@@ -45,7 +45,7 @@ function CaptainSignup() {
     e.preventDefault();
     setMessage("");
     try {
-      const response = await axios.post("/captains/verify-email", { email, otp });
+      const response = await axios.post(`${import.meta.env.VITE_BASE}/captains/verify-email`, { email, otp });
       if (response.status === 200) {
         const data = response.data;
         setCaptain(data.captain);
