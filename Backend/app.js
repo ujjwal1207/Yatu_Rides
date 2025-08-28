@@ -29,6 +29,14 @@ app.use('/users', userRoutes)
 app.use('/captains', captainRoutes)
 app.use('/maps', mapsRoutes)
 app.use('/rides', rideRoutes)
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 
 module.exports = app
