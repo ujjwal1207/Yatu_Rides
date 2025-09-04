@@ -23,9 +23,9 @@ function VehiclePanel(props) {
         />
         <div className="ml-1 w-1/2">
           <h4 className="font-medium text-lg">
-            UberGo
-            <span>
-              <i className="ri-user-3-fill"></i>4
+            ZipzapGo
+              <span>
+                <i className="ri-user-3-fill"></i> 4
             </span>
           </h4>
           <h5 className="font-medium text-sm">2 mins away </h5>
@@ -50,9 +50,9 @@ function VehiclePanel(props) {
         />
         <div className="ml-1 w-1/2">
           <h4 className="font-medium text-lg">
-            UberGo
+            Zipbike 
             <span>
-              <i className="ri-user-3-fill"></i>4
+              <i className="ri-user-3-fill"></i> 2
             </span>
           </h4>
           <h5 className="font-medium text-sm">2 mins away </h5>
@@ -77,9 +77,9 @@ function VehiclePanel(props) {
         />
         <div className="ml-1 w-1/2">
           <h4 className="font-medium text-lg">
-            UberGo
+            ZipAuto
             <span>
-              <i className="ri-user-3-fill"></i>4
+              <i className="ri-user-3-fill"></i> 3
             </span>
           </h4>
           <h5 className="font-medium text-sm">2 mins away </h5>

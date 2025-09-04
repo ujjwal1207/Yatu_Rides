@@ -1,12 +1,23 @@
 import React from "react";
 
+function splitAddress(address) {
+  if (!address) return ["", ""];
+  const [headline, ...rest] = address.split(",");
+  return [headline.trim(), rest.join(",").trim()];
+}
+
 function WaitingforRider(props) {
+  const [pickupHeadline, pickupDetails] = splitAddress(props.ride?.pickup);
+  const [destinationHeadline, destinationDetails] = splitAddress(
+    props.ride?.destination
+  );
+
   return (
     <div>
       <h5
         onClick={() => {
-  props.setWaitingforRiderPanel(false);
-}}
+          props.setWaitingforRiderPanel(false);
+        }}
       >
         <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
       </h5>
@@ -33,18 +44,16 @@ function WaitingforRider(props) {
           <div className="flex items-center gap-5 p-3 border-b-2">
             <i className="ri-map-pin-user-fill"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
-              <p className="text-sm -mt-1 text-gray-600">
-                {props.ride?.pickup}
-              </p>
+              <h3 className="text-lg font-medium">{pickupHeadline}</h3>
+              <p className="text-sm -mt-1 text-gray-600">{pickupDetails}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 border-b-2">
             <i className="text-lg ri-map-pin-2-fill"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
+              <h3 className="text-lg font-medium">{destinationHeadline}</h3>
               <p className="text-sm -mt-1 text-gray-600">
-                {props.ride?.destination}
+                {destinationDetails}
               </p>
             </div>
           </div>

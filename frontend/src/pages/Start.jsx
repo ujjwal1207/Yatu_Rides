@@ -196,7 +196,7 @@ function Start() {
             <img
               className="w-20"
               src="/zipride user.png"
-              alt="Uber Logo"
+              alt="Zipride Logo"
             />
           </div>
           <div className="absolute top-4 right-4 z-10">
@@ -318,6 +318,7 @@ function Start() {
         <LookingforRider
           CreateRide={CreateRide}
           ride={ride}
+                    fare={fare}
           Pickup={Pickup}
           Destination={Destination}
           vehicleType={vehicleType}
